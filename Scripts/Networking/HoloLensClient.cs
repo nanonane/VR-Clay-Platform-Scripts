@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,12 +11,13 @@ namespace HoloLensClient
 {
     public class HLClient
     {
+        static byte[] Buffer { get; set; }
         static Socket sck;
         IPEndPoint ipEndPoint;
         NetworkStream stream;
         public static string ip = "127.0.0.1";
         public static int port = 13;
-        public static string FileDir = "F:\\sample_meshes\\";
+        public static string FileDir = "F:\\sample_test_output\\TestCl\\";
 
         void setUp()
         {
@@ -47,8 +49,14 @@ namespace HoloLensClient
             byte[] data = Encoding.UTF8.GetBytes(text);
 
             // send the number of bytes to the server, in case the data length exceeds the size of the buffer. 
-            sck.Send(Encoding.UTF8.GetBytes(data.Length.ToString()));
-            Debug.Log("Number of bytes: " + data.Length.ToString());
+            byte[] number = new byte[sck.SendBufferSize];
+            string dataLen = data.Length.ToString();
+            for (int i = 0; i < dataLen.Length; i++)
+            {
+                number[i] = Convert.ToByte(dataLen[i]);
+            }
+            sck.Send(number);
+            Debug.Log("Number of bytes: " + dataLen);
 
             // send data
             sck.Send(data);
@@ -70,29 +78,20 @@ namespace HoloLensClient
             return content;
         }
 
-        void OnConnection()
-        {
-            Debug.Log("Server starts accepting client's connection requests...");
-            accepted = serverSck.Accept(); // transfer the socket trying to connect to the variable.
-            Debug.Log("Connected client: " + accepted.RemoteEndPoint.ToString());
-            receiveMessage();
-            closeConnection();
-        }
-
         void receiveMessage()
         {
             // get the total number of bytes
-            Buffer = new byte[accepted.SendBufferSize];
-            accepted.Receive(Buffer);
+            Buffer = new byte[sck.SendBufferSize];
+            sck.Receive(Buffer);
             int totalBytes = int.Parse(Encoding.UTF8.GetString(Buffer));
             Debug.Log("Number of Bytes: " + totalBytes);
             // receive data according to the number of bytes
             string strData = "";
             while (totalBytes != 0)
             {
-                Buffer = new byte[accepted.SendBufferSize]; // clear the buffer
-                int bytesRead = accepted.Receive(Buffer); // store the message in the Buffer, return the number of bytes
-                                                          // format bytesRead, since it will fill the unfilled bytes with blank
+                Buffer = new byte[sck.SendBufferSize]; // clear the buffer
+                int bytesRead = sck.Receive(Buffer); // store the message in the Buffer, return the number of bytes
+                                                     // format bytesRead, since it will fill the unfilled bytes with blank
                 byte[] formatted = new byte[bytesRead];
                 for (int i = 0; i < bytesRead; i++)
                 {

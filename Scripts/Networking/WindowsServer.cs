@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
@@ -14,11 +13,11 @@ namespace WindowsServer
         static byte[] Buffer { get; set; }
         static Socket serverSck, accepted;
         IPEndPoint ipEndPoint;
-        public static string ip = "127.0.0.1";
-        public static int port = 13;
-        public static string FileDir = "F:\\Tah-Da\\";
+        public static string ip = "172.22.96.132";
+        public static int port = 14159;
+        public static string FileDir = "~";
 
-        void setUp()
+        public void setUp()
         {
             // create IPEndPoint
             IPAddress ipAddress = IPAddress.Parse(ip);
@@ -29,26 +28,26 @@ namespace WindowsServer
             serverSck.Listen(1); // at most one connection in the queue
         }
 
-        void OnConnection()
+        public void OnConnection()
         {
-            Debug.Log("Server starts accepting client's connection requests...");
+            Console.WriteLine("Server starts accepting client's connection requests...");
             accepted = serverSck.Accept(); // transfer the socket trying to connect to the variable.
-            Debug.Log("Connected client: " + accepted.RemoteEndPoint.ToString());
+            Console.WriteLine("Connected client: " + accepted.RemoteEndPoint.ToString());
         }
 
-        void sendMessage()
+        public void sendMessage()
         {
             // prepare message
             string text = stringFromFile();
             byte[] data = Encoding.UTF8.GetBytes(text);
 
             // send the number of bytes to the server, in case the data length exceeds the size of the buffer. 
-            sck.Send(Encoding.UTF8.GetBytes(data.Length.ToString()));
-            Debug.Log("Number of bytes: " + data.Length.ToString());
+            accepted.Send(Encoding.UTF8.GetBytes(data.Length.ToString()));
+            Console.WriteLine("Number of bytes: " + data.Length.ToString());
 
             // send data
-            sck.Send(data);
-            Debug.Log("Data Sent!\n");
+            accepted.Send(data);
+            Console.WriteLine("Data Sent!\n");
         }
 
         string stringFromFile()
@@ -67,13 +66,13 @@ namespace WindowsServer
         }
 
 
-        void receiveMessage()
+        public void receiveMessage()
         {
             // get the total number of bytes
             Buffer = new byte[accepted.SendBufferSize];
             accepted.Receive(Buffer);
             int totalBytes = int.Parse(Encoding.UTF8.GetString(Buffer));
-            Debug.Log("Number of Bytes: " + totalBytes);
+            Console.WriteLine("Number of Bytes: " + totalBytes);
             // receive data according to the number of bytes
             string strData = "";
             while (totalBytes != 0)
@@ -90,7 +89,7 @@ namespace WindowsServer
                 totalBytes -= bytesRead;
             }
             stringToFile(strData); // write to file
-            Debug.Log("Received: " + strData); // output the data to console
+            Console.WriteLine("Received: " + strData); // output the data to console
         }
 
         void stringToFile(string content)
@@ -101,11 +100,11 @@ namespace WindowsServer
             }
         }
 
-        void closeConnection()
+        public void closeConnection()
         {
             serverSck.Close();
             accepted.Close();
-            Debug.Log("Connection closed. ");
+            Console.WriteLine("Connection closed. ");
         }
     }
 
