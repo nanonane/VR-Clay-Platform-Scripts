@@ -15,11 +15,11 @@ namespace HoloLensClient
         static Socket sck;
         IPEndPoint ipEndPoint;
         NetworkStream stream;
-        public static string ip = "127.0.0.1";
-        public static int port = 13;
+        public static string ip = "172.22.96.132";
+        public static int port = 14159;
         public static string FileDir = "F:\\sample_test_output\\TestCl\\";
 
-        void setUp()
+        public void setUp()
         {
             // create IPEndPoint
             IPAddress ipAddress = IPAddress.Parse(ip);
@@ -27,7 +27,7 @@ namespace HoloLensClient
             // create socket
             sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
-        void attemptConnection()
+        public void attemptConnection()
         {
             // connect
             try
@@ -42,7 +42,7 @@ namespace HoloLensClient
             Debug.Log("Connected to the server. ");
         }
 
-        void sendMessage()
+        public void sendFileInUnity()
         {
             // prepare message
             string text = stringFromFile();
@@ -63,10 +63,21 @@ namespace HoloLensClient
             Debug.Log("Data Sent!\n");
         }
 
+        public void sendMessage()
+        {
+            // prepare message
+            string text = stringFromFile();
+            byte[] data = Encoding.UTF8.GetBytes(text);
+
+            // send data
+            sck.Send(data);
+            Debug.Log("Data Sent!\n");
+        }
+
         string stringFromFile()
         {
             string content = "";
-            using (StreamReader reader = File.OpenText(FileDir + "bunny10k.obj"))
+            using (StreamReader reader = File.OpenText(FileDir + "HandPosition.txt"))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -78,7 +89,7 @@ namespace HoloLensClient
             return content;
         }
 
-        void receiveMessage()
+        public void receiveMessage()
         {
             // get the total number of bytes
             Buffer = new byte[sck.SendBufferSize];
