@@ -1,0 +1,15 @@
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.csproj.AssemblyReference.cache
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.GeneratedMSBuildEditorConfig.editorconfig
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.AssemblyInfoInputs.cache
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.AssemblyInfo.cs
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.csproj.CoreCompileInputs.cache
+/home/zhuyinuo/CSharp/CommandTest/bin/Debug/net6.0/CommandTest
+/home/zhuyinuo/CSharp/CommandTest/bin/Debug/net6.0/CommandTest.deps.json
+/home/zhuyinuo/CSharp/CommandTest/bin/Debug/net6.0/CommandTest.runtimeconfig.json
+/home/zhuyinuo/CSharp/CommandTest/bin/Debug/net6.0/CommandTest.dll
+/home/zhuyinuo/CSharp/CommandTest/bin/Debug/net6.0/CommandTest.pdb
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.dll
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/refint/CommandTest.dll
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.pdb
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/CommandTest.genruntimeconfig.cache
+/home/zhuyinuo/CSharp/CommandTest/obj/Debug/net6.0/ref/CommandTest.dll
