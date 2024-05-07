@@ -15,9 +15,9 @@ namespace HoloLensClient
         static Socket sck;
         IPEndPoint ipEndPoint;
         NetworkStream stream;
+        private static string FileDir = "F:\\sample_test_output\\TestCl\\";
         public static string ip = "172.22.96.132";
         public static int port = 14159;
-        public static string FileDir = "F:\\sample_test_output\\TestCl\\";
 
         public void setUp()
         {
@@ -77,7 +77,7 @@ namespace HoloLensClient
         string stringFromFile()
         {
             string content = "";
-            using (StreamReader reader = File.OpenText(FileDir + "HandPosition.txt"))
+            using (StreamReader reader = File.OpenText(FileDir + "hand.txt"))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)

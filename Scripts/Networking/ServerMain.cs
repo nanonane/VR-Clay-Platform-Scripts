@@ -4,12 +4,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Text;
-using WindowsServer;
+using LinuxServer;
 using ShellCommand;
 
 int main()
 {
-    WinServer server = new WinServer();
+    LinServer server = new LinServer();
     server.setUp();
     try
     {
@@ -19,7 +19,7 @@ int main()
             while (true)
             {
                 server.receiveMessage();
-                @"cd ~/repos/IDP/Projects/FEM/our_scripts
+                @"cd ~/IDP/Projects/FEM/scripts
                 /usr/bin/python3.8 clay.py".Bash();
                 server.sendMessage();
             }

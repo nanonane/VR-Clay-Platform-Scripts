@@ -5,17 +5,18 @@ using System.Net.Sockets;
 using System.IO;
 using System.Text;
 
-namespace WindowsServer
+namespace LinuxServer
 {
-    public class WinServer
+    public class LinServer
     {
 
         static byte[] Buffer { get; set; }
         static Socket serverSck, accepted;
         IPEndPoint ipEndPoint;
+        static int countTurns = 0;
         public static string ip = "172.22.96.132";
         public static int port = 14159;
-        public static string FileDir = "TransFiles/";
+        public static string FileDir = "/home/zhuyinuo/TransFiles/";
 
         public void setUp()
         {
@@ -38,7 +39,7 @@ namespace WindowsServer
         public void sendMessage()
         {
             // prepare message
-            string text = stringFromFile();
+            string text = stringFromFile("hero_" + countTurns);
             byte[] data = Encoding.UTF8.GetBytes(text);
 
             // send the number of bytes to the server, in case the data length exceeds the size of the buffer. 
@@ -48,12 +49,13 @@ namespace WindowsServer
             // send data
             accepted.Send(data);
             Console.WriteLine("Data Sent!\n");
+            countTurns += 1;
         }
 
-        string stringFromFile()
+        string stringFromFile(string objName)
         {
             string content = "";
-            using (StreamReader reader = File.OpenText(FileDir + "bunny10k.obj"))
+            using (StreamReader reader = File.OpenText(FileDir + "output/clay/" + objName + ".obj"))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -67,6 +69,7 @@ namespace WindowsServer
 
         public void receiveMessage()
         {
+            Console.WriteLine("Start receiving messages...");
             Buffer = new byte[accepted.SendBufferSize]; // clear the buffer
             int bytesRead = accepted.Receive(Buffer); // store the message in the Buffer, return the number of bytes
                                                       // format bytesRead, since it will fill the unfilled bytes with blank
@@ -82,39 +85,9 @@ namespace WindowsServer
             Console.WriteLine("Received: " + strData); // output the data to console
         }
 
-        public void receiveFileInUnity()
-        {
-            /* get the total number of bytes */
-            Buffer = new byte[accepted.SendBufferSize];
-            accepted.Receive(Buffer);
-            int totalBytes = int.Parse(Encoding.UTF8.GetString(Buffer));
-            Console.WriteLine("Number of Bytes: " + totalBytes);
-
-            /* receive data according to the number of bytes */
-            string strData = "";
-            Console.WriteLine(accepted.SendBufferSize);
-            while (totalBytes > 0)
-            {
-                Buffer = new byte[accepted.SendBufferSize]; // clear the buffer
-                int bytesRead = accepted.Receive(Buffer); // store the message in the Buffer, return the number of bytes
-                                                          // format bytesRead, since it will fill the unfilled bytes with blank
-                byte[] formatted = new byte[bytesRead];
-                for (int i = 0; i < bytesRead; i++)
-                {
-                    formatted[i] = Buffer[i];
-                }
-                strData += Encoding.UTF8.GetString(formatted);
-                totalBytes -= bytesRead;
-                Console.WriteLine("Bytes remain: " + totalBytes);
-            }
-
-            stringToFile(strData); // write to file
-            Console.WriteLine("Received: " + strData); // output the data to console
-        }
-
         void stringToFile(string content)
         {
-            using (StreamWriter writer = new StreamWriter(FileDir + "track.txt"))
+            using (StreamWriter writer = new StreamWriter(FileDir + "hand.txt"))
             {
                 writer.Write(content);
             }
