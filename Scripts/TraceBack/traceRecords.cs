@@ -10,7 +10,7 @@ public class traceRecords : MonoBehaviour
     /* 控制翻页 */
     private const int PREV_PAGE = -1;
     private const int NEXT_PAGE = 1;
-
+    private Serializer sr = new Serializer();
     public GameObject previewModel;
     public GameObject[] recordButtons;
     public GameObject[] recordText;
@@ -25,25 +25,12 @@ public class traceRecords : MonoBehaviour
     private int currPage;
     /* The maximum page number the records can take up. Still 0-indexed. */
     private int maxPage;
-    private List<RecNode> pageFirstNode = new List<RecNode>();
+    private List<RecNode> pageFirstNode;
 
 
     /* These initializations are for testing. 
      * After implementing the Server part, we should be able to directly generate and read meshes from files.
     */
-    public Mesh mesh12;
-    public Mesh mesh11;
-    public Mesh mesh10;
-    public Mesh mesh9;
-    public Mesh mesh8;
-    public Mesh mesh7;
-    public Mesh mesh6;
-    public Mesh mesh5;
-    public Mesh mesh4;
-    public Mesh mesh3;
-    public Mesh mesh2;
-    public Mesh mesh1;
-
     RecNode node11;
     RecNode node10;
     RecNode node9;
@@ -61,18 +48,18 @@ public class traceRecords : MonoBehaviour
     void Start()
     {
         // Initializations for testing.
-        node0 = new RecNode(0, RecNode.SMOOTH, mesh1, null);
-        node1 = new RecNode(1, RecNode.PINCH, mesh2, node0);
-        node2 = new RecNode(2, RecNode.PRESS, mesh3, node1);
-        node3 = new RecNode(3, RecNode.PRESS, mesh4, node2);
-        node4 = new RecNode(4, RecNode.SMOOTH, mesh5, node3);
-        node5 = new RecNode(5, RecNode.PINCH, mesh6, node4);
-        node6 = new RecNode(6, RecNode.SMOOTH, mesh7, node5);
-        node7 = new RecNode(7, RecNode.PINCH, mesh8, node6);
-        node8 = new RecNode(8, RecNode.SMOOTH, mesh9, node7);
-        node9 = new RecNode(9, RecNode.PRESS, mesh10, node8);
-        node10 = new RecNode(10, RecNode.PRESS, mesh11, node9);
-        node11 = new RecNode(11, RecNode.PINCH, mesh12, node10);
+        node0 = sr.DeSerializeNode("node0");
+        node1 = sr.DeSerializeNode("node1");
+        node2 = sr.DeSerializeNode("node2");
+        node3 = sr.DeSerializeNode("node3");
+        node4 = sr.DeSerializeNode("node4");
+        node5 = sr.DeSerializeNode("node5");
+        node6 = sr.DeSerializeNode("node6");
+        node7 = sr.DeSerializeNode("node7");
+        node8 = sr.DeSerializeNode("node8");
+        node9 = sr.DeSerializeNode("node9");
+        node10 = sr.DeSerializeNode("node10");
+        node11 = sr.DeSerializeNode("node11");
 
         lastNode = node11;
 
@@ -85,6 +72,7 @@ public class traceRecords : MonoBehaviour
         currNode = lastNode;
         currPage = 0;
         maxPage = lastNode.getDepth() / BUTTON_NUM;
+        pageFirstNode = new List<RecNode>();
         pageFirstNode.Add(lastNode);
         gameObject.SetActive(true);
         previewModel.SetActive(true);
