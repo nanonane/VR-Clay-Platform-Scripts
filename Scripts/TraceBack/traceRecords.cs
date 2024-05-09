@@ -48,18 +48,18 @@ public class traceRecords : MonoBehaviour
     void Start()
     {
         // Initializations for testing.
-        node0 = sr.DeSerializeNode("node0");
-        node1 = sr.DeSerializeNode("node1");
-        node2 = sr.DeSerializeNode("node2");
-        node3 = sr.DeSerializeNode("node3");
-        node4 = sr.DeSerializeNode("node4");
-        node5 = sr.DeSerializeNode("node5");
-        node6 = sr.DeSerializeNode("node6");
-        node7 = sr.DeSerializeNode("node7");
-        node8 = sr.DeSerializeNode("node8");
-        node9 = sr.DeSerializeNode("node9");
-        node10 = sr.DeSerializeNode("node10");
-        node11 = sr.DeSerializeNode("node11");
+        node0 = sr.DeSerializeNode("rec0");
+        node1 = sr.DeSerializeNode("rec1");
+        node2 = sr.DeSerializeNode("rec2");
+        node3 = sr.DeSerializeNode("rec3");
+        node4 = sr.DeSerializeNode("rec4");
+        node5 = sr.DeSerializeNode("rec5");
+        node6 = sr.DeSerializeNode("rec6");
+        node7 = sr.DeSerializeNode("rec7");
+        node8 = sr.DeSerializeNode("rec8");
+        node9 = sr.DeSerializeNode("rec9");
+        node10 = sr.DeSerializeNode("rec10");
+        node11 = sr.DeSerializeNode("rec11");
 
         lastNode = node11;
 
@@ -89,7 +89,7 @@ public class traceRecords : MonoBehaviour
         for (int i = 0; i < activeButtonNum; i++)
         {
             recordButtons[i].SetActive(true);
-            recordText[i].GetComponent<TextMeshProUGUI>().text = getOp(currNode.getOperationType());
+            recordText[i].GetComponent<TextMeshPro>().text = getOp(currNode.getOperationType());
             currNode = currNode.getParent();
         }
         // 当前页显示完后，currNode指向下一页的第一项

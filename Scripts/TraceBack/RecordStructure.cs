@@ -22,19 +22,19 @@ namespace RecordStructure
         private DateTime timestamp; // 操作时间
         private string modelName; // 模型
         private int depth; // 当前节点到根节点的深度，根节点深度为0
-        private RecNode parent; // 指向前一次记录。后续考虑更改为Hash String，作为记录文件名
+        private int parentID; // 指向前一次记录。后续考虑更改为Hash String，作为记录文件名
 
-        public RecNode(int ID, int operationType, string modelName, RecNode parent)
+        public RecNode(int ID, int operationType, string modelName, int parentID)
         {
             this.ID = ID;
             this.operationType = operationType;
             this.timestamp = DateTime.Now;
             this.modelName = modelName;
-            this.parent = parent;
-            if (parent == null)
+            this.parentID = parentID;
+            if (parentID == -1)
                 this.depth = 0;
             else
-                this.depth = parent.depth + 1;
+                this.depth = getParent().depth + 1;
         }
 
         /* use the given id maintained by the class to initialize the node */
@@ -73,7 +73,9 @@ namespace RecordStructure
         // parent字段更改为String后需要相应地更改这个方法
         public RecNode getParent()
         {
-            return parent;
+            if (parentID == -1) return null;
+            Serializer sr = new Serializer();
+            return sr.DeSerializeNode("rec" + parentID); 
         }
     }
 
@@ -102,7 +104,7 @@ namespace RecordStructure
 
     public class Serializer
     {
-        private static string RecDir = "F:\\sample_test_output\\Serialization\\";
+        private static string RecDir = "C:\\Users\\Yingtuww\\Desktop\\output\\Serialization\\";
         public void SerializeNode(RecNode node, string filename)
         {
             Stream s = File.Open(RecDir + filename, FileMode.Create);
