@@ -5,23 +5,65 @@ using UnityEngine.UI;
 using System.IO;
 
 using Microsoft;
+using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Input;
 using System;
 
+using System.Threading;
+using HoloLensClient;
+
 public class hand_1 : MonoBehaviour
 {
+    public SwitchModels switchModelsScript;
 
+    HLClient Client = new HLClient();
     // Start is called before the first frame update
+    void Awake()
+    {
+        // 在 Awake() 方法中尝试获取 SwitchModels 脚本组件
+        if (switchModelsScript == null)
+        {
+            switchModelsScript = GetComponent<SwitchModels>();
+            if (switchModelsScript == null)
+            {
+                switchModelsScript = FindObjectOfType<SwitchModels>();
+            }
+        }
+    }
+
     void Start()
     {
+        
+        Client.setUp(); // 初始化
+        Client.attemptConnection(); // 连接到服务器
+        Thread receiveThread = new Thread(Client.receiveMessage); // 开启接收文件的线程
+        receiveThread.Start();
         BoneJointInit();
+        if (switchModelsScript == null)
+        {
+            switchModelsScript = GetComponent<SwitchModels>();
+            if (switchModelsScript == null)
+            {
+                switchModelsScript = FindObjectOfType<SwitchModels>();
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         BoneJointRender();
+
+        // 如果 switchModelsScript 仍然为 null,继续尝试获取
+        if (switchModelsScript == null)
+        {
+            switchModelsScript = GetComponent<SwitchModels>();
+            if (switchModelsScript == null)
+            {
+                switchModelsScript = FindObjectOfType<SwitchModels>();
+            }
+        }
     }
 
     List<GameObject> jointObjectL = new List<GameObject>();
@@ -100,9 +142,10 @@ public class hand_1 : MonoBehaviour
         {
             isRecordingTrajectory = true;
             start_time = Time.time;
+            Client.sendMessage(); // 发送手势追踪结果的txt
             Debug.Log("Enter");
         }
-        
+
     }
     void Exit()
     {
@@ -110,12 +153,12 @@ public class hand_1 : MonoBehaviour
         if (hcount == 0)
         {
             isRecordingTrajectory = false;
-            WriteHandDataToFile(jointTrajectoriesR, jointTrajectoriesL, DateTime.Now.ToString("HH_mm_ss_ff") + ".txt");
+            WriteHandDataToFile(jointTrajectoriesR, jointTrajectoriesL, ".txt");
             jointTrajectoriesR = new Dictionary<int, List<Vector3>>();
             jointTrajectoriesL = new Dictionary<int, List<Vector3>>();
             Debug.Log("Exit");
         }
-        
+
     }
 
 
@@ -140,14 +183,14 @@ public class hand_1 : MonoBehaviour
     MixedRealityPose pose;
     Vector3[] jointR = new Vector3[5];
     Vector3[] jointL = new Vector3[5];
-    public bool isRecordingTrajectory = false;
+    bool isRecordingTrajectory = false;
     Dictionary<int, List<Vector3>> jointTrajectoriesL = new Dictionary<int, List<Vector3>>();
     Dictionary<int, List<Vector3>> jointTrajectoriesR = new Dictionary<int, List<Vector3>>();
     Color color = Color.white;
     Vector3 scale = new Vector3(0.01f, 0.01f, 0.01f);
-    public string outputFilePath = "C:\\Users\\Yingtuww\\Desktop\\output"; // 输出文件的路径
+    public string outputFilePath = "E:\\train_2023\\output\\HandPosition"; // 输出文件的路径
     int[] index = { 6, 11, 16, 21, 26 };
-   
+
 
     void BoneJointRender()
     {
@@ -165,7 +208,7 @@ public class hand_1 : MonoBehaviour
                 jointObjectR[i].GetComponent<Renderer>().enabled = true;
                 if (isRecordingTrajectory)
                 {
-                    if((Time.time - start_time)%0.05f < 0.01f)
+                    if ((Time.time - start_time) % 0.05f < 0.01f)
                     {
                         // 记录关节轨迹
                         if (jointTrajectoriesR.ContainsKey(i))
@@ -177,7 +220,7 @@ public class hand_1 : MonoBehaviour
                             jointTrajectoriesR[i] = new List<Vector3> { jointR[i] * 10 };
                         }
                     }
-                    
+
                 }
             }
 
@@ -218,13 +261,16 @@ public class hand_1 : MonoBehaviour
 
     public GameObject Opsubject;
     float angle;
-Vector3 axis;
+   
+    Vector3 axis;
     void WriteHandDataToFile(Dictionary<int, List<Vector3>> jointTrajectoriesR, Dictionary<int, List<Vector3>> jointTrajectoriesL, string date)
     {
         using (StreamWriter writer = new StreamWriter(outputFilePath + date, false))
         {
             float angle;
             Vector3 axis;
+            writer.WriteLine("Model Name:");
+            writer.WriteLine(switchModelsScript.GetCurrentModelName());
             writer.WriteLine("Model Positions:");
             writer.WriteLine(FormatVector(Opsubject.transform.position * 10));
             Opsubject.transform.rotation.ToAngleAxis(out angle, out axis);
@@ -273,5 +319,3 @@ Vector3 axis;
     }
 
 }
-
-
