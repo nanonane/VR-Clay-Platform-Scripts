@@ -15,6 +15,7 @@ namespace RecordStructure
         public const int PINCH = 5050; // 捏
         public const int PRESS = 5051; // 压
         public const int SMOOTH = 5052; // 抹
+        public const int NONE = 5055; // 什么都没有
 
         // private static int IDCount = 0; // identification for the current record. 0-indexed.
         private int ID;
@@ -69,8 +70,12 @@ namespace RecordStructure
             return operationType;
         }
 
+        public int getParentID()
+        {
+            return parentID;
+        }
+
         /* Return the parent node of this one. */
-        // parent字段更改为String后需要相应地更改这个方法
         public RecNode getParent()
         {
             if (parentID == -1) return null;

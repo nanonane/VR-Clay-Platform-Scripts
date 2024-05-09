@@ -15,7 +15,8 @@ namespace HoloLensClient
         static Socket sck;
         IPEndPoint ipEndPoint;
         NetworkStream stream;
-        private static string FileDir = "F:\\sample_test_output\\TestCl\\";
+        private static string HandFileDir = "C:\\Users\\Yingtuww\\Desktop\\output\\";
+        private static string ModelFileDir = "C:\\Users\\Yingtuww\\Desktop\\output\\Models\\";
         public static string ip = "172.22.96.132";
         public static int port = 14159;
 
@@ -77,7 +78,7 @@ namespace HoloLensClient
         string stringFromFile()
         {
             string content = "";
-            using (StreamReader reader = File.OpenText(FileDir + "hand.txt"))
+            using (StreamReader reader = File.OpenText(HandFileDir + "HandPosition.txt"))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -89,7 +90,7 @@ namespace HoloLensClient
             return content;
         }
 
-        public void receiveMessage()
+        public void receiveMessage(int ID)
         {
             // get the total number of bytes
             Buffer = new byte[sck.SendBufferSize];
@@ -111,13 +112,13 @@ namespace HoloLensClient
                 strData += Encoding.UTF8.GetString(formatted);
                 totalBytes -= bytesRead;
             }
-            stringToFile(strData); // write to file
+            stringToFile(ID, strData); // write to file
             Debug.Log("Received: " + strData); // output the data to console
         }
 
-        void stringToFile(string content)
+        void stringToFile(int ID, string content)
         {
-            using (StreamWriter writer = new StreamWriter(FileDir + "TestOut.obj"))
+            using (StreamWriter writer = new StreamWriter(ModelFileDir + "model" + ID + ".obj"))
             {
                 writer.Write(content);
             }

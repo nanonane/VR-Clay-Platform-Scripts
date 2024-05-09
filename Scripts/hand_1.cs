@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using System.IO;
 
 using Microsoft;
-using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Input;
 using System;
@@ -13,12 +12,19 @@ using System;
 using System.Threading;
 using HoloLensClient;
 
+using Utils;
+using RecordStructure;
+
 public class hand_1 : MonoBehaviour
 {
     public SwitchModels switchModelsScript;
-
+    public RecNode currNode;
+    private GameObject currModel;
     HLClient Client = new HLClient();
-    // Start is called before the first frame update
+    private static int IDCount;
+    private static string ModelFileDir = "C:\\Users\\Yingtuww\\Desktop\\output\\Models\\";
+    private Serializer sr = new Serializer();
+
     void Awake()
     {
         // 在 Awake() 方法中尝试获取 SwitchModels 脚本组件
@@ -34,11 +40,14 @@ public class hand_1 : MonoBehaviour
 
     void Start()
     {
-        
+        // 网络传输初始化
         Client.setUp(); // 初始化
         Client.attemptConnection(); // 连接到服务器
-        Thread receiveThread = new Thread(Client.receiveMessage); // 开启接收文件的线程
-        receiveThread.Start();
+
+        // 回溯结点初始化
+        currNode = new RecNode(0, RecNode.NONE, null, -1); // 傀儡头结点
+        IDCount = 1;
+
         BoneJointInit();
         if (switchModelsScript == null)
         {
@@ -142,10 +151,9 @@ public class hand_1 : MonoBehaviour
         {
             isRecordingTrajectory = true;
             start_time = Time.time;
-            Client.sendMessage(); // 发送手势追踪结果的txt
             Debug.Log("Enter");
         }
-
+        
     }
     void Exit()
     {
@@ -154,11 +162,23 @@ public class hand_1 : MonoBehaviour
         {
             isRecordingTrajectory = false;
             WriteHandDataToFile(jointTrajectoriesR, jointTrajectoriesL, ".txt");
+            Client.sendMessage(); // 发送手势追踪结果的txt
+            Thread receiveThread = new Thread(() => Client.receiveMessage(IDCount)); // 开启接收文件的线程
+            receiveThread.Start();
+            //Client.receiveMessage(IDCount);
+            // 接收到文件，开始渲染模型
+            //while (receiveThread.IsAlive) ;
+            currNode = new RecNode(IDCount, RecNode.PINCH, "model" + IDCount, currNode.getParentID());
+            currModel = switchModelsScript.GetCurrentModel();
+            currModel.GetComponent<MeshFilter>().mesh = currNode.getClayModel();
+            sr.SerializeNode(currNode, "rec" + IDCount);
+            IDCount++;
+
             jointTrajectoriesR = new Dictionary<int, List<Vector3>>();
             jointTrajectoriesL = new Dictionary<int, List<Vector3>>();
             Debug.Log("Exit");
         }
-
+        
     }
 
 
@@ -188,9 +208,9 @@ public class hand_1 : MonoBehaviour
     Dictionary<int, List<Vector3>> jointTrajectoriesR = new Dictionary<int, List<Vector3>>();
     Color color = Color.white;
     Vector3 scale = new Vector3(0.01f, 0.01f, 0.01f);
-    public string outputFilePath = "E:\\train_2023\\output\\HandPosition"; // 输出文件的路径
+    public string outputFilePath = "C:\\Users\\Yingtuww\\Desktop\\output\\HandPosition"; // 输出文件的路径
     int[] index = { 6, 11, 16, 21, 26 };
-
+   
 
     void BoneJointRender()
     {
@@ -208,7 +228,7 @@ public class hand_1 : MonoBehaviour
                 jointObjectR[i].GetComponent<Renderer>().enabled = true;
                 if (isRecordingTrajectory)
                 {
-                    if ((Time.time - start_time) % 0.05f < 0.01f)
+                    if((Time.time - start_time)%0.05f < 0.01f)
                     {
                         // 记录关节轨迹
                         if (jointTrajectoriesR.ContainsKey(i))
@@ -220,7 +240,7 @@ public class hand_1 : MonoBehaviour
                             jointTrajectoriesR[i] = new List<Vector3> { jointR[i] * 10 };
                         }
                     }
-
+                    
                 }
             }
 
@@ -261,7 +281,6 @@ public class hand_1 : MonoBehaviour
 
     public GameObject Opsubject;
     float angle;
-   
     Vector3 axis;
     void WriteHandDataToFile(Dictionary<int, List<Vector3>> jointTrajectoriesR, Dictionary<int, List<Vector3>> jointTrajectoriesL, string date)
     {
@@ -269,8 +288,8 @@ public class hand_1 : MonoBehaviour
         {
             float angle;
             Vector3 axis;
-            writer.WriteLine("Model Name:");
-            writer.WriteLine(switchModelsScript.GetCurrentModelName());
+            //writer.WriteLine("Model Name:");
+            //writer.WriteLine(switchModelsScript.GetCurrentModelName());
             writer.WriteLine("Model Positions:");
             writer.WriteLine(FormatVector(Opsubject.transform.position * 10));
             Opsubject.transform.rotation.ToAngleAxis(out angle, out axis);
@@ -319,3 +338,5 @@ public class hand_1 : MonoBehaviour
     }
 
 }
+
+

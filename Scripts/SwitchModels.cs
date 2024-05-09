@@ -9,7 +9,7 @@ public class SwitchModels : MonoBehaviour
     public Interactable myButton; // 这是我们的按钮
 
     public int currentModel = 1; // 当前显示的模型的编号
-   
+
     void Start()
     {
         // 在开始时，添加按钮的点击事件
@@ -28,7 +28,7 @@ public class SwitchModels : MonoBehaviour
         GetCurrentModel().SetActive(true);
     }
 
-    GameObject GetCurrentModel()
+    public GameObject GetCurrentModel()
     {
         // 根据当前显示的模型的编号，返回对应的模型
         switch (currentModel)
@@ -43,9 +43,9 @@ public class SwitchModels : MonoBehaviour
     {
         switch (currentModel)
         {
-            case 1: return "Model 1";
-            case 2: return "Model 2";
-            case 3: return "Model 3";
+            case 1: return "Model_1";
+            case 2: return "Model_2";
+            case 3: return "Model_3";
             default: return "Unknown";
         }
     }

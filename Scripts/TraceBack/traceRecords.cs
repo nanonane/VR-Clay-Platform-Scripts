@@ -16,7 +16,7 @@ public class traceRecords : MonoBehaviour
     public GameObject[] recordText;
 
     /* 记录当前分支的叶节点 */
-    private RecNode lastNode;
+    public RecNode lastNode;
     /* for iteration */
     private RecNode currNode;
     /* the offset between button number and record node number */
@@ -27,43 +27,15 @@ public class traceRecords : MonoBehaviour
     private int maxPage;
     private List<RecNode> pageFirstNode;
 
-
-    /* These initializations are for testing. 
-     * After implementing the Server part, we should be able to directly generate and read meshes from files.
-    */
-    RecNode node11;
-    RecNode node10;
-    RecNode node9;
-    RecNode node8;
-    RecNode node7;
-    RecNode node6;
-    RecNode node5;
-    RecNode node4;
-    RecNode node3;
-    RecNode node2;
-    RecNode node1;
-    RecNode node0;
-
     // Start is called before the first frame update
     void Start()
     {
-        // Initializations for testing.
-        node0 = sr.DeSerializeNode("rec0");
-        node1 = sr.DeSerializeNode("rec1");
-        node2 = sr.DeSerializeNode("rec2");
-        node3 = sr.DeSerializeNode("rec3");
-        node4 = sr.DeSerializeNode("rec4");
-        node5 = sr.DeSerializeNode("rec5");
-        node6 = sr.DeSerializeNode("rec6");
-        node7 = sr.DeSerializeNode("rec7");
-        node8 = sr.DeSerializeNode("rec8");
-        node9 = sr.DeSerializeNode("rec9");
-        node10 = sr.DeSerializeNode("rec10");
-        node11 = sr.DeSerializeNode("rec11");
+        lastNode = sr.DeSerializeNode("rec11");
+        menuSetUp();
+    }
 
-        lastNode = node11;
-
-        // delete this line when combining this part into the platform
+    void OnEnable()
+    {
         menuSetUp();
     }
 
@@ -76,7 +48,7 @@ public class traceRecords : MonoBehaviour
         pageFirstNode.Add(lastNode);
         gameObject.SetActive(true);
         previewModel.SetActive(true);
-        showMenuButtons(lastNode.getDepth() + 1);
+        showMenuButtons(lastNode.getDepth());
     }
 
     /* Show the record buttons on the menu. */
@@ -102,7 +74,7 @@ public class traceRecords : MonoBehaviour
             if (currPage == 0) return;
             currPage -= 1;
             currNode = pageFirstNode[currPage];
-            showMenuButtons(currNode.getDepth() + 1);
+            showMenuButtons(currNode.getDepth());
             return;
         }
         if (pageChange == NEXT_PAGE)
@@ -111,7 +83,7 @@ public class traceRecords : MonoBehaviour
             for (int i = 0; i < BUTTON_NUM; i++) recordButtons[i].SetActive(false);
             currPage += 1;
             if (!pageFirstNode.Contains(currNode)) pageFirstNode.Add(currNode);
-            showMenuButtons(currNode.getDepth() + 1);
+            showMenuButtons(currNode.getDepth());
             return;
         }
     }

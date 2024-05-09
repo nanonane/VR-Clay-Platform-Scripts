@@ -10,7 +10,8 @@ namespace Utils
 
     class MeshImporter
     {
-        private static string ObjDir = "F:\\UnityProjects\\HoloLensClient\\Assets\\ClayModels\\Rabbit\\";
+        //private static string ObjDir = "D:\\Unity3d\\Clay\\Assets\\ClayModels\\Rabbit\\";
+        private static string ObjDir = "C:\\Users\\Yingtuww\\Desktop\\output\\Models\\";
         public Mesh importModel(string objName)
         {
             string objData = File.ReadAllText(ObjDir + objName + ".obj");

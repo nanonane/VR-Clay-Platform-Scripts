@@ -22,7 +22,7 @@ public class serializeTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        node0 = new RecNode(0, RecNode.SMOOTH, "01", -1);
+        node0 = new RecNode(0, RecNode.NONE, null, -1);
         sr.SerializeNode(node0, "rec0");
         node1 = new RecNode(1, RecNode.PINCH, "03", 0);
         sr.SerializeNode(node1, "rec1");
